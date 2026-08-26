@@ -1,0 +1,648 @@
+/* ==========================================================================
+   File: script.js
+   Purpose: Digital Studio & Editorial Gallery Interactions
+   Includes: Lenis smooth scroll, custom cursor tracking, text rotator, 
+             mobile navigation, GSAP animations, magnetic buttons, 
+             3D perspective card tilt, and dynamic lightbox modal.
+   ========================================================================== */
+
+document.addEventListener('DOMContentLoaded', () => {
+  'use strict';
+
+  /* --------------------------------------------------------------------------
+     01. DOM ELEMENTS & INITIALIZATION
+     -------------------------------------------------------------------------- */
+  const header = document.querySelector('.site-header');
+  const loadingScreen = document.querySelector('.loading-screen');
+  const menuToggle = document.querySelector('.menu-toggle');
+  const navLinks = document.querySelectorAll('.site-nav a');
+  const reveals = document.querySelectorAll('.reveal');
+  const heroVideos = document.querySelectorAll('.hero-background-video');
+  const cursorDot = document.querySelector('.cursor-dot');
+
+  /* --------------------------------------------------------------------------
+     02. LENIS SMOOTH SCROLLING (OPTIMIZED FOR PERFORMANCE)
+     -------------------------------------------------------------------------- */
+  let lenis = null;
+  if (typeof window.Lenis !== 'undefined') {
+    lenis = new Lenis({
+      duration: 1.2,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      smoothWheel: true,
+      smoothTouch: false // Native touch scrolling to prevent mobile freezing
+    });
+
+    lenis.on('scroll', () => {
+      if (window.ScrollTrigger) {
+        ScrollTrigger.update();
+      }
+    });
+
+    if (window.gsap) {
+      gsap.ticker.add((time) => {
+        lenis.raf(time * 1000);
+      });
+      gsap.ticker.lagSmoothing(0);
+    } else {
+      const raf = (time) => {
+        lenis.raf(time);
+        requestAnimationFrame(raf);
+      };
+      requestAnimationFrame(raf);
+    }
+    // If we detect a mobile/coarse input device or small viewport, prefer
+    // native scrolling and reduce animations for smoother performance.
+    const isMobileDevice = window.matchMedia('(max-width:850px)').matches || window.matchMedia('(pointer: coarse)').matches;
+    if (isMobileDevice) {
+      document.body.classList.add('mobile');
+      document.body.classList.add('no-animations');
+      if (lenis && typeof lenis.stop === 'function') {
+        try { lenis.stop(); } catch (e) { /* graceful fallback */ }
+      }
+    }
+  }
+
+  /* --------------------------------------------------------------------------
+     03. CUSTOM CURSOR TRACKING
+     -------------------------------------------------------------------------- */
+  if (cursorDot && window.matchMedia('(pointer: fine)').matches) {
+    let mouseX = 0;
+    let mouseY = 0;
+
+    window.addEventListener('mousemove', (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+      cursorDot.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0) translate(-50%, -50%)`;
+    }, { passive: true });
+
+    // Event Delegation for hover effects
+    document.addEventListener('mouseover', (e) => {
+      const target = e.target.closest('a, button, .poster-card, .art-card, .fashion-card, .artwork-card, .project-card, .collection-card, .card');
+      if (target) {
+        cursorDot.classList.add('active');
+      }
+    });
+
+    document.addEventListener('mouseout', (e) => {
+      const target = e.target.closest('a, button, .poster-card, .art-card, .fashion-card, .artwork-card, .project-card, .collection-card, .card');
+      if (target) {
+        cursorDot.classList.remove('active');
+      }
+    });
+  }
+
+  /* --------------------------------------------------------------------------
+     04. MAGNETIC BUTTON INTERACTION
+     -------------------------------------------------------------------------- */
+  if (window.matchMedia('(pointer: fine)').matches) {
+    const magneticBtns = document.querySelectorAll('.btn, .brand, .brand-logo, .cart-trigger-btn, .art-modal-close, .menu-toggle');
+
+    magneticBtns.forEach((btn) => {
+      btn.addEventListener('mousemove', (e) => {
+        const rect = btn.getBoundingClientRect();
+        const x = e.clientX - rect.left - rect.width / 2;
+        const y = e.clientY - rect.top - rect.height / 2;
+
+        if (window.gsap) {
+          gsap.to(btn, {
+            x: x * 0.25,
+            y: y * 0.25,
+            duration: 0.3,
+            ease: 'power2.out'
+          });
+        }
+      });
+
+      btn.addEventListener('mouseleave', () => {
+        if (window.gsap) {
+          gsap.to(btn, {
+            x: 0,
+            y: 0,
+            duration: 0.5,
+            ease: 'elastic.out(1, 0.4)'
+          });
+        }
+      });
+    });
+  }
+
+  /* --------------------------------------------------------------------------
+     05. 3D CARD PERSPECTIVE TILT
+     -------------------------------------------------------------------------- */
+  if (window.matchMedia('(pointer: fine)').matches && window.gsap) {
+    const cards = document.querySelectorAll(
+      '.poster-card, .art-card, .fashion-card, .artwork-card, .project-card, .collection-card, .card'
+    );
+
+    cards.forEach((card) => {
+      card.addEventListener('mousemove', (e) => {
+        const rect = card.getBoundingClientRect();
+        const x = (e.clientX - rect.left) / rect.width - 0.5;
+        const y = (e.clientY - rect.top) / rect.height - 0.5;
+
+        gsap.to(card, {
+          rotationY: x * 8,
+          rotationX: -y * 8,
+          transformPerspective: 1000,
+          ease: 'power1.out',
+          duration: 0.4
+        });
+      });
+
+      card.addEventListener('mouseleave', () => {
+        gsap.to(card, {
+          rotationY: 0,
+          rotationX: 0,
+          ease: 'power2.out',
+          duration: 0.6
+        });
+      });
+    });
+  }
+
+  /* --------------------------------------------------------------------------
+     06. LOADING STATE & PRELOADER
+     -------------------------------------------------------------------------- */
+  const hidePreloader = () => {
+    if (loadingScreen) {
+      loadingScreen.classList.add('hidden');
+    }
+    document.body.classList.add('loaded');
+  };
+
+  if (document.readyState === 'complete') {
+    hidePreloader();
+  } else {
+    window.addEventListener('load', hidePreloader);
+  }
+
+  /* --------------------------------------------------------------------------
+     07. HERO VIDEO & MEDIA READINESS
+     -------------------------------------------------------------------------- */
+  heroVideos.forEach((video) => {
+    if (video.readyState >= 3) {
+      video.classList.add('ready');
+    } else {
+      video.addEventListener('loadeddata', () => video.classList.add('ready'));
+    }
+  });
+
+  /* --------------------------------------------------------------------------
+     08. HEADER SCROLL & MOBILE NAVIGATION
+     -------------------------------------------------------------------------- */
+  const toggleHeader = () => {
+    if (header) {
+      header.classList.toggle('scrolled', window.scrollY > 24);
+    }
+  };
+
+  window.addEventListener('scroll', toggleHeader, { passive: true });
+  toggleHeader();
+
+  menuToggle?.addEventListener('click', () => {
+    document.body.classList.toggle('nav-open');
+  });
+
+  navLinks.forEach((link) => {
+    link.addEventListener('click', () => document.body.classList.remove('nav-open'));
+  });
+
+  /* Active Page Identifier */
+  const activePage = document.body.dataset.page || 'home';
+  navLinks.forEach((link) => {
+    const pageName = link.dataset.nav;
+    if (pageName) {
+      link.classList.toggle('active', pageName === activePage);
+    }
+  });
+
+  /* --------------------------------------------------------------------------
+     09. HERO TEXT ROTATOR
+     -------------------------------------------------------------------------- */
+  const rotateTexts = document.querySelectorAll('.hero-text-rotator .rotate-text');
+  if (rotateTexts.length > 1) {
+    let activeTextIdx = 0;
+    setInterval(() => {
+      rotateTexts[activeTextIdx].classList.remove('active');
+      activeTextIdx = (activeTextIdx + 1) % rotateTexts.length;
+      rotateTexts[activeTextIdx].classList.add('active');
+    }, 4000);
+  }
+
+  /* --------------------------------------------------------------------------
+     10. INTERSECTION OBSERVER REVEAL ANIMATIONS
+     -------------------------------------------------------------------------- */
+  if (reveals.length > 0) {
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+          revealObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15 });
+
+    reveals.forEach((item) => revealObserver.observe(item));
+  }
+
+  /* --------------------------------------------------------------------------
+     11. ENHANCED GSAP ANIMATIONS & PARALLAX
+     -------------------------------------------------------------------------- */
+  if (window.gsap) {
+    const heroTL = gsap.timeline({ defaults: { ease: 'power4.out' } });
+
+    // 1. Eyebrow badge
+    if (document.querySelector('.hero-copy .eyebrow')) {
+      heroTL.fromTo('.hero-copy .eyebrow', 
+        { y: -20, opacity: 0 }, 
+        { y: 0, opacity: 1, duration: 1.2 }
+      );
+    }
+
+    // 2. Main Heading Reveal
+    if (document.querySelector('.hero-copy h1')) {
+      heroTL.fromTo('.hero-copy h1', 
+        { y: 50, opacity: 0, skewY: 3 }, 
+        { y: 0, opacity: 1, skewY: 0, duration: 1.3 },
+        '-=0.8'
+      );
+    }
+
+    // 3. Hero Subtitle & Rotator
+    const subElements = document.querySelectorAll('.hero-title, .hero-text-rotator, .hero-subtitle');
+    if (subElements.length > 0) {
+      heroTL.fromTo(subElements, 
+        { y: 25, opacity: 0 }, 
+        { y: 0, opacity: 1, duration: 1, stagger: 0.15 },
+        '-=0.9'
+      );
+    }
+
+    // 4. Action Buttons
+    if (document.querySelector('.hero-actions .btn')) {
+      heroTL.fromTo('.hero-actions .btn', 
+        { y: 20, opacity: 0, scale: 0.95 }, 
+        { y: 0, opacity: 1, scale: 1, duration: 0.8, stagger: 0.1, ease: 'back.out(1.7)' },
+        '-=0.6'
+      );
+    }
+
+    // Interactive Hero Mouse Parallax
+    const heroStage = document.querySelector('.hero-stage');
+    const heroCopy = document.querySelector('.hero-copy');
+
+    if (heroStage && heroCopy && window.matchMedia('(pointer: fine)').matches) {
+      heroStage.addEventListener('mousemove', (e) => {
+        const { clientX, clientY } = e;
+        const { innerWidth, innerHeight } = window;
+        
+        const x = (clientX / innerWidth - 0.5) * 2;
+        const y = (clientY / innerHeight - 0.5) * 2;
+
+        gsap.to(heroCopy, {
+          x: x * 12,
+          y: y * 12,
+          rotationY: x * 4,
+          rotationX: -y * 4,
+          duration: 0.8,
+          ease: 'power2.out',
+          transformPerspective: 1000
+        });
+      });
+
+      heroStage.addEventListener('mouseleave', () => {
+        gsap.to(heroCopy, {
+          x: 0,
+          y: 0,
+          rotationY: 0,
+          rotationX: 0,
+          duration: 1,
+          ease: 'power2.out'
+        });
+      });
+    }
+  }
+
+  /* --------------------------------------------------------------------------
+     12. ARTWORK LIGHTBOX MODAL (MULTI-VARIANT GALLERY)
+     -------------------------------------------------------------------------- */
+  (function initModal() {
+    const cardSelector = [
+      '.poster-card',
+      '.art-card',
+      '.fashion-card',
+      '.featured-project-card',
+      '.collection-card',
+      '.project-card',
+      '.artwork-card',
+      '.card'
+    ].join(',');
+
+    let modal = document.querySelector('.art-modal') || document.querySelector('#artModal');
+
+    // Create modal DOM structure dynamically if missing
+    if (!modal) {
+      modal = document.createElement('div');
+      modal.className = 'art-modal';
+      modal.id = 'artModal';
+      modal.setAttribute('role', 'dialog');
+      modal.setAttribute('aria-modal', 'true');
+      modal.setAttribute('aria-hidden', 'true');
+      modal.innerHTML = `
+        <div class="art-modal-container">
+          <button class="art-modal-close" aria-label="Close modal">&times;</button>
+          <div class="art-modal-stage">
+            <button class="modal-nav prev" aria-label="Previous image">&larr;</button>
+            <img src="" alt="Gallery Display" id="modalImage">
+            <button class="modal-nav next" aria-label="Next image">&rarr;</button>
+          </div>
+          <div class="art-modal-sidebar">
+            <div class="modal-meta-header">
+              <span class="category-tag"></span>
+              <h2 class="modal-title" id="modalTitle"></h2>
+            </div>
+            <div class="modal-meta-body">
+              <p class="modal-description"></p>
+            </div>
+            <div class="version-section">
+              <span class="version-section-title">Versions / Views</span>
+              <div class="version-thumbnails"></div>
+            </div>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(modal);
+    }
+
+    const modalImg = modal.querySelector('.art-modal-stage img');
+    const modalTitle = modal.querySelector('.modal-title') || modal.querySelector('.modal-meta-header h2');
+    const modalCategory = modal.querySelector('.category-tag');
+    const modalDesc = modal.querySelector('.modal-description');
+    const closeBtn = modal.querySelector('.art-modal-close');
+    const versionContainer = modal.querySelector('.version-thumbnails');
+    const prevBtn = modal.querySelector('.modal-nav.prev');
+    const nextBtn = modal.querySelector('.modal-nav.next');
+    const modalStage = modal.querySelector('.art-modal-stage');
+
+    let currentVariants = [];
+    let currentIndex = 0;
+    let touchStartX = 0;
+    let touchEndX = 0;
+
+    function parseVariants(cardEl, primaryImg) {
+      // 1. Check for nested image elements (.variant-img)
+      const nestedImgs = Array.from(cardEl.querySelectorAll('.variant-img')).map(i => i.src);
+      if (nestedImgs.length > 0) return nestedImgs;
+
+      // 2. Check for data-versions or data-variants attributes
+      const raw = cardEl?.dataset.versions || 
+                  cardEl?.dataset.variants || 
+                  cardEl?.getAttribute('data-versions') || 
+                  cardEl?.getAttribute('data-variants') || 
+                  primaryImg?.dataset.versions || 
+                  primaryImg?.dataset.variants || 
+                  primaryImg?.getAttribute('data-versions') || 
+                  primaryImg?.getAttribute('data-variants') || '';
+
+      if (raw) {
+        try {
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed) && parsed.length) return parsed;
+        } catch (e) {
+          // Fallback parsing for comma-delimited string format
+        }
+        const splitString = raw.split(',').map(s => s.trim()).filter(Boolean);
+        if (splitString.length > 0) return splitString;
+      }
+
+      // 3. Fallback to primary image source
+      return primaryImg?.src ? [primaryImg.src] : [];
+    }
+
+    function showIndex(index) {
+      if (!currentVariants.length) return;
+      currentIndex = (index + currentVariants.length) % currentVariants.length;
+      
+      if (modalImg) {
+        modalImg.style.opacity = '0.3';
+        setTimeout(() => {
+          modalImg.src = currentVariants[currentIndex];
+          modalImg.style.opacity = '1';
+        }, 80);
+      }
+
+      if (versionContainer) {
+        versionContainer.querySelectorAll('img').forEach((thumb, idx) => {
+          thumb.classList.toggle('active', idx === currentIndex);
+        });
+      }
+    }
+
+    function openModal(card, primaryImg) {
+      const title = card.getAttribute('data-title') || card.querySelector('h2, h3')?.textContent || 'Untitled Work';
+      const category = card.getAttribute('data-category') || card.querySelector('span, .eyebrow')?.textContent || 'Exhibition';
+      const description = card.getAttribute('data-description') || card.querySelector('p')?.textContent || '';
+
+      currentVariants = parseVariants(card, primaryImg);
+      
+      if (modalTitle) modalTitle.textContent = title;
+      if (modalCategory) modalCategory.textContent = category;
+      if (modalDesc) modalDesc.textContent = description;
+
+      // Build variant thumbnails
+      if (versionContainer) {
+        versionContainer.innerHTML = '';
+        if (currentVariants.length > 1) {
+          if (versionContainer.parentElement) {
+            versionContainer.parentElement.style.display = 'block';
+          }
+          currentVariants.forEach((src, i) => {
+            const thumb = document.createElement('img');
+            thumb.src = src;
+            thumb.alt = `View ${i + 1}`;
+            if (i === 0) thumb.classList.add('active');
+            thumb.addEventListener('click', () => showIndex(i));
+            versionContainer.appendChild(thumb);
+          });
+        } else if (versionContainer.parentElement) {
+          versionContainer.parentElement.style.display = 'none';
+        }
+      }
+
+      // Navigation controls visibility
+      if (prevBtn) prevBtn.style.display = currentVariants.length > 1 ? 'grid' : 'none';
+      if (nextBtn) nextBtn.style.display = currentVariants.length > 1 ? 'grid' : 'none';
+
+      showIndex(0);
+      modal.classList.add('active');
+      modal.setAttribute('aria-hidden', 'false');
+
+      if (lenis) {
+        lenis.stop();
+      } else {
+        document.body.style.overflow = 'hidden';
+      }
+    }
+
+    function closeModal() {
+      modal.classList.remove('active');
+      modal.setAttribute('aria-hidden', 'true');
+
+      if (lenis) {
+        lenis.start();
+      } else {
+        document.body.style.overflow = '';
+      }
+    }
+
+    // Delegated click event listener
+    document.addEventListener('click', (e) => {
+      const card = e.target.closest(cardSelector);
+      if (!card) return;
+
+      const img = card.querySelector('img');
+      if (!img) return;
+
+      e.preventDefault();
+      openModal(card, img);
+    });
+
+    // Control Handlers
+    closeBtn?.addEventListener('click', closeModal);
+    prevBtn?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      showIndex(currentIndex - 1);
+    });
+    nextBtn?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      showIndex(currentIndex + 1);
+    });
+
+    // Touch Swiping for Mobile Lightbox Navigation
+    modalStage?.addEventListener('touchstart', (e) => {
+      touchStartX = e.changedTouches[0].screenX;
+    }, { passive: true });
+
+    modalStage?.addEventListener('touchend', (e) => {
+      touchEndX = e.changedTouches[0].screenX;
+      handleSwipe();
+    }, { passive: true });
+
+    function handleSwipe() {
+      const swipeThreshold = 50;
+      if (touchEndX < touchStartX - swipeThreshold) {
+        showIndex(currentIndex + 1); // Swipe left -> next
+      }
+      if (touchEndX > touchStartX + swipeThreshold) {
+        showIndex(currentIndex - 1); // Swipe right -> prev
+      }
+    }
+
+    // Close when clicking outside of artwork container
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal || e.target.classList.contains('art-modal-stage')) {
+        closeModal();
+      }
+    });
+
+    // Keyboard Navigation
+    document.addEventListener('keydown', (e) => {
+      if (!modal.classList.contains('active')) return;
+
+      if (e.key === 'Escape') closeModal();
+      if (e.key === 'ArrowRight') showIndex(currentIndex + 1);
+      if (e.key === 'ArrowLeft') showIndex(currentIndex - 1);
+    });
+  })();
+
+  /* --------------------------------------------------------------------------
+     12b. YEAR BADGES & FILTER (AUTO-APPLY 2025–2026)
+     - Adds a visible year label to each artwork card if missing
+     - Creates a small filter UI to show/hide works by year
+     -------------------------------------------------------------------------- */
+  (function addYearBadgesAndFilter() {
+    const selectors = '.poster-card, .collection-card, .artwork-card';
+    const cards = Array.from(document.querySelectorAll(selectors));
+    if (!cards.length) return;
+
+    const seenYears = new Set();
+
+    cards.forEach((card) => {
+      // Try to extract an explicit year from existing meta text
+      let year = null;
+      const metaSpan = card.querySelector('.poster-meta span') || card.querySelector('.poster-meta')?.querySelector('span') || card.querySelector('span');
+      if (metaSpan && metaSpan.textContent) {
+        const m = metaSpan.textContent.match(/(20\d{2})/);
+        if (m) year = m[1];
+      }
+
+      // Default to the user's range when no clear year is present
+      if (!year) year = '2025–2026';
+
+      card.dataset.year = year;
+      seenYears.add(year);
+
+      // Append a visible year-range badge if not already present
+      if (!card.querySelector('.year-range')) {
+        const meta = card.querySelector('.poster-meta') || card.querySelector('.poster-meta') || card;
+        if (meta) {
+          const badge = document.createElement('span');
+          badge.className = 'year-range';
+          badge.textContent = year;
+          meta.appendChild(badge);
+        }
+      }
+    });
+
+    // Insert a filter UI above the first gallery if missing
+    const firstGallery = document.querySelector('.poster-grid, .collection-grid, .art-grid');
+    if (!firstGallery) return;
+    if (document.querySelector('.year-filter')) return;
+
+    const container = document.createElement('div');
+    container.className = 'year-filter';
+    const label = document.createElement('label');
+    label.setAttribute('for', 'year-select');
+    label.textContent = 'Filter by year:';
+
+    const select = document.createElement('select');
+    select.id = 'year-select';
+    select.setAttribute('aria-label', 'Filter artworks by year');
+
+    const allOpt = document.createElement('option');
+    allOpt.value = 'all';
+    allOpt.textContent = 'All';
+    select.appendChild(allOpt);
+
+    const years = Array.from(seenYears).sort();
+    years.forEach((y) => {
+      const opt = document.createElement('option');
+      opt.value = y;
+      opt.textContent = y;
+      select.appendChild(opt);
+    });
+
+    select.addEventListener('change', () => {
+      const val = select.value;
+      cards.forEach((c) => {
+        if (val === 'all' || c.dataset.year === val) c.style.display = '';
+        else c.style.display = 'none';
+      });
+    });
+
+    container.appendChild(label);
+    container.appendChild(select);
+    firstGallery.parentNode.insertBefore(container, firstGallery);
+  })();
+});
+
+/* --------------------------------------------------------------------------
+   13. SERVICE WORKER REGISTRATION
+   -------------------------------------------------------------------------- */
+if ('serviceWorker' in navigator && window.location.protocol === 'https:') {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch((err) => {
+      console.warn('Service Worker registration skipped or failed:', err);
+    });
+  });
+}
