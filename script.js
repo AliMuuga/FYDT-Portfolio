@@ -1,4 +1,8 @@
+const savedTheme = localStorage.getItem('fydt-theme');
+document.documentElement.dataset.theme = savedTheme === 'dark' ? 'dark' : 'light';
+
 /* ==========================================================================
+   Purpose: Digital Studio & Editorial Gallery Interactions
    File: script.js
    Purpose: Digital Studio & Editorial Gallery Interactions
    Includes: Lenis smooth scroll, custom cursor tracking, text rotator, 
@@ -15,10 +19,30 @@ document.addEventListener('DOMContentLoaded', () => {
   const header = document.querySelector('.site-header');
   const loadingScreen = document.querySelector('.loading-screen');
   const menuToggle = document.querySelector('.menu-toggle');
+  const themeToggle = document.querySelector('.theme-toggle');
   const navLinks = document.querySelectorAll('.site-nav a');
   const reveals = document.querySelectorAll('.reveal');
   const heroVideos = document.querySelectorAll('.hero-background-video');
   const cursorDot = document.querySelector('.cursor-dot');
+
+  const updateThemeToggle = () => {
+    const isDark = document.documentElement.dataset.theme === 'dark';
+    if (themeToggle) {
+      themeToggle.setAttribute('aria-pressed', String(isDark));
+      themeToggle.setAttribute('aria-label', isDark ? 'Switch to light mode' : 'Switch to dark mode');
+      const icon = themeToggle.querySelector('i');
+      icon?.classList.toggle('fa-moon', !isDark);
+      icon?.classList.toggle('fa-sun', isDark);
+    }
+  };
+
+  updateThemeToggle();
+  themeToggle?.addEventListener('click', () => {
+    const nextTheme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+    document.documentElement.dataset.theme = nextTheme;
+    localStorage.setItem('fydt-theme', nextTheme);
+    updateThemeToggle();
+  });
 
   /* --------------------------------------------------------------------------
      02. LENIS SMOOTH SCROLLING (OPTIMIZED FOR PERFORMANCE)
@@ -476,7 +500,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (lenis) {
         lenis.stop();
       } else {
-        document.body.style.overflow = 'hidden';
+        document.body.classList.add('modal-open');
       }
     }
 
@@ -487,7 +511,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (lenis) {
         lenis.start();
       } else {
-        document.body.style.overflow = '';
+        document.body.classList.remove('modal-open');
       }
     }
 

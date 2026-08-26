@@ -46,6 +46,9 @@
       <a href="Artworks.html" data-nav="art">Art Works</a>
       <a href="clothing.html" data-nav="clothes">Clothes</a>
     </nav>
+    <button class="theme-toggle" type="button" aria-label="Switch to dark mode" aria-pressed="false" title="Toggle light and dark mode">
+      <i class="fa-solid fa-moon" aria-hidden="true"></i>
+    </button>
   </header>
 
   <main id="main-content">
@@ -54,62 +57,63 @@
          ========================================================================== -->
     <section class="hero-section">
       <div class="hero-stage">
-        <video class="hero-background-video" muted autoplay loop playsinline preload="none" aria-hidden="true">
+        <video class="hero-background-video" muted autoplay loop playsinline preload="metadata" aria-hidden="true">
           <source src="Images/Hero/Index.mp4" type="video/mp4">
           Your browser does not support video playback.
         </video>
         <div class="hero-overlay"></div>
-        
-     <div class="hero-copy">
-          <p class="eyebrow"> Digital Museum </p>
+        <div class="hero-copy">
+          <p class="eyebrow">Digital Museum</p>
           <h1>Finn Finnyoudidthis</h1>
-          
           <div class="hero-text-rotator" aria-live="polite">
             <span class="rotate-text active">Graphic Designer & Full Stack Web Developer</span>
             <span class="rotate-text">Designing experiences that tell stories.</span>
             <span class="rotate-text">Brand systems, editorial motion & web design.</span>
             <span class="rotate-text">Creating cinematic digital installations.</span>
           </div>
-
           <div class="hero-actions">
             <a class="btn btn-dark" href="#collections">Explore Collection</a>
             <a class="btn btn-secondary" href="#contact">Contact</a>
           </div>
         </div>
-
         <a class="scroll-indicator" href="#about" aria-label="Scroll to about section">
           <span></span>
         </a>
       </div>
     </section>
 
-    <!-- ==========================================================================
-         ABOUT SECTION
-         ========================================================================== -->
-    <section class="section about-section" id="about">
-      <div class="homepage-heading reveal">
-        <p class="eyebrow">Featured artist</p>
-        <h2>Finn is the creative director behind cinema‑grade brand work and digital exhibition design.</h2>
-      </div>
-      <div class="homepage-about-grid reveal">
-        <div class="about-copy">
-          <p class="body-text">Finn merges editorial design, digital product craft, and storytelling to create work that feels premium, memorable, and deeply personal.</p>
-          <div class="about-detail">
-            <h3>Design philosophy</h3>
-            <p>Every project is treated like an installation: composition, motion, and narrative are balanced so the work feels both sharp and cinematic.</p>
+    <section class="section personal-intro-section" id="about" aria-labelledby="personal-intro-title">
+      <div class="personal-intro-layout">
+        <div class="personal-hero-art" aria-hidden="true">
+          <img src="Images/FYDT/me.jpg" alt="" width="900" height="1200">
+        </div>
+        <div class="hero-copy personal-hero-copy">
+          <p class="eyebrow">Welcome to my corner of the internet</p>
+          <p class="personal-kicker">Designer / Developer / Visual storyteller</p>
+          <h2 id="personal-intro-title">Hi, I'm Finn.</h2>
+          <p class="personal-intro">I make bold visual identities, digital experiences, and images with a little bit of noise around the edges.</p>
+          <div class="hero-text-rotator" aria-live="polite">
+            <span class="rotate-text active">Graphic design and full stack web development.</span>
+            <span class="rotate-text">Brand systems, editorial motion, and web design.</span>
+            <span class="rotate-text">A personal archive of things I made.</span>
           </div>
-          <div class="about-detail">
-            <h3>Inspiration</h3>
-            <p>Film, fashion, architecture, and art history shape a visual language that is luxurious, polished, and unexpectedly bold.</p>
+          <div class="hero-actions">
+            <a class="btn btn-dark" href="#collections">See my work</a>
+            <a class="btn btn-secondary" href="#contact">Get in touch</a>
           </div>
-          <div class="about-detail">
-            <h3>Specialties</h3>
-            <p>Brand systems, editorial motion, image manipulation, responsive web experiences, and full stack development for modern creative platforms.</p>
+          <div class="personal-about-details">
+            <div class="about-detail">
+              <h3>Design philosophy</h3>
+              <p>Every project is treated like an installation: composition, motion, and narrative are balanced so the work feels sharp and cinematic.</p>
+            </div>
+            <div class="about-detail">
+              <h3>Specialties</h3>
+              <p>Brand systems, editorial motion, image manipulation, responsive web experiences, and full stack development.</p>
+            </div>
           </div>
         </div>
       </div>
     </section>
-
     <!-- ==========================================================================
          COLLECTIONS SECTION
          ========================================================================== -->
@@ -140,7 +144,7 @@
             <p>Fashion concepts that move between streetwear, archive references, and tactile styling.</p>
           </div>
         </a>
-        <a href="website.html" class="collection-card">
+        <a href="Index.html#contact" class="collection-card">
           <img src="Images/Posters/Spain.jpg" alt="Websites collection preview" loading="lazy" decoding="async" width="800" height="1000">
           <div>
             <h3>Websites</h3>
@@ -278,47 +282,7 @@
       </div>
     </section>
 
-    <!-- ==========================================================================
-         FEATURED PROJECTS SECTION
-         ========================================================================== -->
-    <section class="section project-section">
-      <div class="homepage-heading reveal">
-        <p class="eyebrow">Featured projects</p>
-        <h2>Selected work that defines the practice.</h2>
-      </div>
-      <div class="featured-project-grid reveal">
-        <article class="featured-project-card">
-          <img src="Images/Artworks/GWSM-(1).jpg" alt="Archive House project preview" loading="lazy" decoding="async" width="800" height="600">
-          <div class="project-copy">
-            <p class="eyebrow">Archive House</p>
-            <h3>Brand campaign for a culture collective.</h3>
-            <p>Editorial story, motion-led visuals, and polished digital presentation.</p>
-            <div class="project-meta"><span>Branding</span><span>2025–2026</span></div>
-            <a href="#" class="btn btn-secondary">View Project</a>
-          </div>
-        </article>
-        <article class="featured-project-card">
-          <img src="Images/Artworks/Panda-(1).jpg" alt="Signal Studio project preview" loading="lazy" decoding="async" width="800" height="600">
-          <div class="project-copy">
-            <p class="eyebrow">Signal Studio</p>
-            <h3>Interactive editorial site with immersive pacing.</h3>
-            <p>Clean interface, rich imagery, and subtle motion for a modern creative studio.</p>
-            <div class="project-meta"><span>Web</span><span>2025–2026</span></div>
-            <a href="#" class="btn btn-secondary">View Project</a>
-          </div>
-        </article>
-        <article class="featured-project-card">
-          <img src="Images/Posters/Djed.jpg" alt="Gallery Flow project preview" loading="lazy" decoding="async" width="800" height="600">
-          <div class="project-copy">
-            <p class="eyebrow">Gallery Flow</p>
-            <h3>A conceptual fashion and editorial showcase.</h3>
-            <p>Typography-first layout with luxurious spacing and refined visual sequencing.</p>
-            <div class="project-meta"><span>Fashion</span><span>2025–2026</span></div>
-            <a href="#" class="btn btn-secondary">View Project</a>
-          </div>
-        </article>
-      </div>
-    </section>
+
 
     <!-- ==========================================================================
          SKILLS SECTION (NEO-BRUTALIST BADGE UPGRADE)
@@ -427,9 +391,9 @@
     <div class="footer-info">
       <p class="eyebrow">Contact</p>
       <div class="email-cta">
-        <a href="mailto:ali@museumfolio.com" class="btn btn-dark email-btn">
+        <a href="mailto:fatherfinnn@gmail.com" class="contact-email email-btn">
           <i class="fa-solid fa-envelope" aria-hidden="true"></i>
-          <span>ali@museumfolio.com</span>
+          <span>fatherfinnn@gmail.com</span>
         </a>
       </div>
       <p class="footer-subtext">Socials: Find the latest work and studio updates.</p>
@@ -438,7 +402,7 @@
       <a href="https://www.instagram.com/finnyoudidthis/" target="_blank" rel="noreferrer" aria-label="Instagram">
         <i class="fab fa-instagram" aria-hidden="true"></i>
       </a>
-      <a href="https://www.tiktok.com/" target="_blank" rel="noreferrer" aria-label="TikTok">
+      <a href="https://www.tiktok.com/@finn.psb?_r=1&_t=ZS-99DDhGolilQ" target="_blank" rel="noreferrer" aria-label="TikTok">
         <i class="fab fa-tiktok" aria-hidden="true"></i>
       </a>
       <a href="https://github.com/" target="_blank" rel="noreferrer" aria-label="GitHub">
@@ -447,7 +411,7 @@
       <a href="https://www.linkedin.com/" target="_blank" rel="noreferrer" aria-label="LinkedIn">
         <i class="fab fa-linkedin" aria-hidden="true"></i>
       </a>
-      <a href="mailto:ali@museumfolio.com" aria-label="Email Direct">
+      <a href="mailto:fatherfinnn@gmail.com" aria-label="Email Direct">
         <i class="fas fa-envelope" aria-hidden="true"></i>
       </a>
     </div>
