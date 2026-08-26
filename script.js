@@ -24,7 +24,13 @@ document.addEventListener('DOMContentLoaded', () => {
      02. LENIS SMOOTH SCROLLING (OPTIMIZED FOR PERFORMANCE)
      -------------------------------------------------------------------------- */
   let lenis = null;
-  if (typeof window.Lenis !== 'undefined') {
+  const isMobileDevice = window.matchMedia('(max-width:850px)').matches || window.matchMedia('(pointer: coarse)').matches;
+  if (isMobileDevice) {
+    document.body.classList.add('mobile');
+    document.body.classList.add('no-animations');
+  }
+
+  if (typeof window.Lenis !== 'undefined' && !isMobileDevice) {
     lenis = new Lenis({
       duration: 1.2,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
@@ -49,16 +55,6 @@ document.addEventListener('DOMContentLoaded', () => {
         requestAnimationFrame(raf);
       };
       requestAnimationFrame(raf);
-    }
-    // If we detect a mobile/coarse input device or small viewport, prefer
-    // native scrolling and reduce animations for smoother performance.
-    const isMobileDevice = window.matchMedia('(max-width:850px)').matches || window.matchMedia('(pointer: coarse)').matches;
-    if (isMobileDevice) {
-      document.body.classList.add('mobile');
-      document.body.classList.add('no-animations');
-      if (lenis && typeof lenis.stop === 'function') {
-        try { lenis.stop(); } catch (e) { /* graceful fallback */ }
-      }
     }
   }
 

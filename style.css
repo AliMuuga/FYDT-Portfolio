@@ -1,11 +1,4 @@
-/* ==========================================================================
-   PRODUCTION CSS ARCHITECTURE — EDITORIAL GALLERY & DIGITAL STUDIO
-   Aesthetic: Raw Grunge / Neo-Brutalist Indie Zine / High-Contrast Tactile
-   ========================================================================== */
 
-/* --------------------------------------------------------------------------
-   01. DESIGN SYSTEM & COLOR TOKENS (PUNK GRUNGE / NEO-BRUTALIST THEME)
-   -------------------------------------------------------------------------- */
 :root {
   /* Color System - Pitch Black, Dark Slate & Rust Accent */
   --bg-primary: #0a0a0a;
@@ -193,14 +186,8 @@ body::after {
 }
 
 /* --------------------------------------------------------------------------
-   Mobile Performance & Responsive Layout Enhancements
-   - Reduce costly animations on small devices
-   - Simplify card transforms and grid for mobile
-   - Show mobile menu toggle and provide an accessible nav overlay
-   -------------------------------------------------------------------------- */
-
-/* Prefer vertical pan scrolling on touch devices */
-html, body, .section { touch-action: pan-y; }
+   Mobile Performance
+--------------------------------------------------------------------------- */
 
 /* Target small screens */
 @media (max-width: 850px) {
@@ -969,7 +956,7 @@ video.hero-background-video,
 }
 
 /* --------------------------------------------------------------------------
-   09. RE-ENGINEERED SIDE-BY-SIDE MODAL
+   RED SIDE-BY-SIDE MODAL
    -------------------------------------------------------------------------- */
 .art-modal,
 #artModal {
@@ -1216,60 +1203,6 @@ video.hero-background-video,
 }
 .art-modal.no-info .art-modal-sidebar {
   display: none;
-}
-
-/* --------------------------------------------------------------------------
-   10. CV, ABOUT & SERVICE PANELS
-   -------------------------------------------------------------------------- */
-.about-grid,
-.homepage-about-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 3.5rem;
-  align-items: center;
-}
-
-.cv-card,
-.panel,
-.skill-panel,
-.process-step,
-.timeline-item,
-.service-card {
-  background: var(--bg-surface);
-  border: 2.5px solid var(--border-strong);
-  border-radius: var(--radius-md) !important;
-  padding: 2.2rem;
-  box-shadow: var(--shadow-hard-md);
-  transition: all var(--transition-fast);
-}
-
-.cv-card:hover,
-.panel:hover,
-.service-card:hover {
-  border-color: var(--accent);
-  transform: translate(-2px, -2px);
-  box-shadow: var(--shadow-hard-lg);
-  background: var(--bg-surface-elevated);
-}
-
-.services-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 1.2rem;
-}
-
-.service-icon {
-  width: 48px;
-  height: 48px;
-  border-radius: var(--radius-sm);
-  display: grid;
-  place-items: center;
-  background: var(--accent);
-  border: 2px solid var(--border-strong);
-  color: #ffffff;
-  font-size: 1.1rem;
-  margin-bottom: 1.2rem;
-  box-shadow: 2px 2px 0px #000000;
 }
 
 /* --------------------------------------------------------------------------
